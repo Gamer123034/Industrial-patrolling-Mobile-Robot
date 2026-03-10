@@ -1,0 +1,265 @@
+#include <Servo.h>
+#include <SPI.h>
+#include <MFRC522.h>
+
+// ---------- RFID ----------
+#define SS_PIN 10
+#define RST_PIN 9
+MFRC522 rfid(SS_PIN, RST_PIN);
+
+byte yogeshUID[4]  = {0xB6,0xF7,0x91,0x2F};
+byte maniroopUID[4]= {0xF6,0x29,0x4D,0x2F};
+
+bool robotActive = false;
+
+Servo scanner;
+
+// ---------- ULTRASONIC ----------
+#define TRIG 2
+#define ECHO 3
+
+// ---------- SERVO ----------
+#define SERVO_PIN 4
+
+// ---------- MOTOR DRIVER ----------
+#define ENA 5
+#define ENB 6
+
+#define IN1 A0
+#define IN2 A1
+#define IN3 A2
+#define IN4 A5
+
+// ---------- SETTINGS ----------
+int safeDistance = 35;
+
+int leftSpeed = 180;
+int rightSpeed = 200;
+
+long duration;
+int distance;
+
+// ---------- SETUP ----------
+void setup()
+{
+
+Serial.begin(9600);
+
+SPI.begin();
+rfid.PCD_Init();
+
+scanner.attach(SERVO_PIN);
+scanner.write(90);
+
+pinMode(TRIG,OUTPUT);
+pinMode(ECHO,INPUT);
+
+pinMode(IN1,OUTPUT);
+pinMode(IN2,OUTPUT);
+pinMode(IN3,OUTPUT);
+pinMode(IN4,OUTPUT);
+
+pinMode(ENA,OUTPUT);
+pinMode(ENB,OUTPUT);
+
+Serial.println("Scan RFID Card");
+
+}
+
+// ---------- LOOP ----------
+void loop()
+{
+
+// ---------- RFID AUTHORIZATION ----------
+if(!robotActive)
+{
+checkRFID();
+return;
+}
+
+// ---------- YOUR ORIGINAL CODE ----------
+distance = getDistance();
+
+if(distance > safeDistance)
+{
+moveForward();
+}
+else
+{
+avoidObstacle();
+}
+
+delay(50);
+
+}
+
+// ---------- RFID CHECK ----------
+void checkRFID()
+{
+
+if(!rfid.PICC_IsNewCardPresent()) return;
+if(!rfid.PICC_ReadCardSerial()) return;
+
+if(compareUID(yogeshUID))
+{
+Serial.println("Authorized: Yogesh");
+robotActive = true;
+}
+
+else if(compareUID(maniroopUID))
+{
+Serial.println("Authorized: Maniroop");
+robotActive = true;
+}
+
+else
+{
+Serial.println("Unauthorized Card");
+}
+
+rfid.PICC_HaltA();
+
+}
+
+bool compareUID(byte allowed[])
+{
+
+for(byte i=0;i<4;i++)
+{
+if(rfid.uid.uidByte[i] != allowed[i])
+return false;
+}
+
+return true;
+
+}
+
+// ---------- DISTANCE ----------
+int getDistance()
+{
+
+digitalWrite(TRIG,LOW);
+delayMicroseconds(2);
+
+digitalWrite(TRIG,HIGH);
+delayMicroseconds(10);
+digitalWrite(TRIG,LOW);
+
+duration = pulseIn(ECHO,HIGH,20000);
+
+if(duration == 0)
+return 100;
+
+return duration*0.034/2;
+
+}
+
+// ---------- OBSTACLE HANDLING ----------
+void avoidObstacle()
+{
+
+stopRobot();
+delay(200);
+
+int leftDistance;
+int rightDistance;
+
+// Scan LEFT
+scanner.write(150);
+delay(400);
+leftDistance = getDistance();
+
+// Scan RIGHT
+scanner.write(30);
+delay(400);
+rightDistance = getDistance();
+
+// Center sensor
+scanner.write(90);
+delay(200);
+
+// Decision logic
+if(leftDistance > rightDistance && leftDistance > safeDistance)
+{
+turnLeft();
+}
+
+else if(rightDistance > safeDistance)
+{
+turnRight();
+}
+
+else
+{
+moveBackward();
+delay(400);
+turnRight();
+}
+
+}
+
+// ---------- MOTOR FUNCTIONS ----------
+
+void moveForward()
+{
+
+analogWrite(ENA,leftSpeed);
+analogWrite(ENB,rightSpeed);
+
+digitalWrite(IN1,HIGH);
+digitalWrite(IN2,LOW);
+
+digitalWrite(IN3,HIGH);
+digitalWrite(IN4,LOW);
+
+}
+
+void moveBackward()
+{
+
+analogWrite(ENA,leftSpeed);
+analogWrite(ENB,rightSpeed);
+
+digitalWrite(IN1,LOW);
+digitalWrite(IN2,HIGH);
+
+digitalWrite(IN3,LOW);
+digitalWrite(IN4,HIGH);
+
+}
+
+void turnLeft()
+{
+
+digitalWrite(IN1,LOW);
+digitalWrite(IN2,HIGH);
+
+digitalWrite(IN3,HIGH);
+digitalWrite(IN4,LOW);
+
+delay(350);
+
+}
+
+void turnRight()
+{
+
+digitalWrite(IN1,HIGH);
+digitalWrite(IN2,LOW);
+
+digitalWrite(IN3,LOW);
+digitalWrite(IN4,HIGH);
+
+delay(350);
+
+}
+
+void stopRobot()
+{
+
+digitalWrite(IN1,LOW);
+digitalWrite(IN2,LOW);
+digitalWrite(IN3,LOW);
+digitalWrite(IN4,LOW);
+
+}
