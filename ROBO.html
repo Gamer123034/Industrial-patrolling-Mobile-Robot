@@ -1,0 +1,969 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Industrial Patrolling Mobile Robot</title>
+
+<style>
+
+/* GENERAL */
+
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+scroll-behavior:smooth;
+}
+
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600&display=swap');
+
+body{
+font-family:'Inter', sans-serif;
+background:linear-gradient(135deg, #0a0e27 0%, #1a1f3a 50%, #0f1329 100%);
+color:#e4e6eb;
+min-height:100vh;
+position:relative;
+overflow-x:hidden;
+}
+
+body::before {
+content:'';
+position:fixed;
+top:0;
+left:0;
+width:100%;
+height:100%;
+background:radial-gradient(circle at 20% 50%, rgba(139,92,246,0.1) 0%, transparent 50%),
+            radial-gradient(circle at 80% 80%, rgba(59,130,246,0.08) 0%, transparent 50%);
+pointer-events:none;
+z-index:-1;
+}
+
+/* HEADER */
+
+header{
+background:linear-gradient(135deg, #1a1f3a 0%, #16213e 50%, #0f1329 100%);
+color:white;
+text-align:center;
+padding:60px 40px;
+box-shadow:0 10px 40px rgba(139,92,246,0.15);
+animation:slideDownHeader 0.8s ease-out;
+border-bottom:1px solid rgba(139,92,246,0.2);
+backdrop-filter:blur(10px);
+position:relative;
+}
+
+header h1{
+font-size:48px;
+letter-spacing:-1px;
+animation:fadeInDown 0.8s ease-out;
+font-family:'Poppins', sans-serif;
+font-weight:700;
+background:linear-gradient(135deg, #8b5cf6 0%, #3b82f6 100%);
+-webkit-background-clip:text;
+-webkit-text-fill-color:transparent;
+background-clip:text;
+}
+
+header::after {
+content:'';
+position:absolute;
+bottom:-1px;
+left:0;
+right:0;
+height:1px;
+background:linear-gradient(90deg, transparent, rgba(139,92,246,0.4), transparent);
+}
+
+@keyframes slideDownHeader {
+from {
+opacity:0;
+transform:translateY(-20px);
+}
+to {
+opacity:1;
+transform:translateY(0);
+}
+}
+
+@keyframes fadeInDown {
+from {
+opacity:0;
+transform:translateY(-30px);
+}
+to {
+opacity:1;
+transform:translateY(0);
+}
+}
+
+/* LAYOUT */
+
+.container{
+display:flex;
+width:100%;
+}
+
+/* SIDEBAR */
+
+.sidebar{
+width:280px;
+background:linear-gradient(180deg, rgba(26,31,58,0.95) 0%, rgba(15,19,41,0.95) 100%);
+color:white;
+padding:40px 20px;
+min-height:100vh;
+box-shadow:2px 0 20px rgba(0,0,0,0.5);
+position:fixed;
+left:0;
+top:0;
+backdrop-filter:blur(10px);
+border-right:1px solid rgba(139,92,246,0.1);
+overflow-y:auto;
+}
+
+.sidebar a{
+display:block;
+padding:14px 16px;
+margin-bottom:10px;
+text-decoration:none;
+color:#b4bcd9;
+border-radius:8px;
+transition:all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+will-change:transform, background, box-shadow;
+font-size:14px;
+font-weight:500;
+position:relative;
+overflow:hidden;
+}
+
+.sidebar a::before {
+content:'';
+position:absolute;
+top:0;
+left:-100%;
+width:100%;
+height:100%;
+background:linear-gradient(90deg, transparent, rgba(139,92,246,0.3), transparent);
+transition:left 0.6s ease;
+}
+
+.sidebar a:hover{
+background:linear-gradient(135deg, rgba(139,92,246,0.2), rgba(59,130,246,0.15));
+transform:translateX(8px);
+color:#a78bfa;
+box-shadow:0 4px 16px rgba(139,92,246,0.3);
+}
+
+.sidebar a:hover::before {
+left:100%;
+}
+
+/* CONTENT */
+
+.content{
+flex:1;
+padding:60px 50px;
+margin-left:280px;
+max-width:1200px;
+margin-right:auto;
+}
+
+/* SECTION */
+
+section{
+background:linear-gradient(135deg, rgba(26,31,58,0.6) 0%, rgba(15,19,41,0.4) 100%);
+padding:40px;
+margin-bottom:40px;
+border-radius:16px;
+box-shadow:0 8px 32px rgba(0,0,0,0.3);
+transition:all 0.5s cubic-bezier(0.4, 0.0, 0.2, 1);
+will-change:transform, box-shadow;
+animation:fadeInUp 0.6s ease-out;
+border:1px solid rgba(139,92,246,0.1);
+backdrop-filter:blur(10px);
+position:relative;
+overflow:hidden;
+}
+
+section::before {
+content:'';
+position:absolute;
+top:0;
+left:0;
+right:0;
+height:2px;
+background:linear-gradient(90deg, rgba(139,92,246,0.5), rgba(59,130,246,0.5), transparent);
+}
+
+section:hover{
+transform:translateY(-8px);
+box-shadow:0 20px 50px rgba(139,92,246,0.2);
+border:1px solid rgba(139,92,246,0.2);
+}
+
+@keyframes fadeInUp {
+from {
+opacity:0;
+transform:translateY(20px);
+}
+to {
+opacity:1;
+transform:translateY(0);
+}
+}
+
+/* TITLES */
+
+h2{
+margin-bottom:20px;
+color:#e4e6eb;
+border-bottom:none;
+display:inline-block;
+padding-bottom:0;
+animation:fadeInLeft 0.6s ease-out;
+font-family:'Poppins', sans-serif;
+font-size:32px;
+font-weight:600;
+position:relative;
+background:linear-gradient(135deg, #a78bfa 0%, #60a5fa 100%);
+-webkit-background-clip:text;
+-webkit-text-fill-color:transparent;
+background-clip:text;
+}
+
+h2::after {
+content:'';
+position:absolute;
+bottom:-8px;
+left:0;
+width:60px;
+height:3px;
+background:linear-gradient(90deg, #8b5cf6, #3b82f6);
+border-radius:2px;
+}
+
+h3 {
+color:#c7d2e0;
+margin-top:24px;
+margin-bottom:12px;
+font-family:'Poppins', sans-serif;
+font-size:20px;
+font-weight:600;
+}
+
+p {
+animation:fadeInUp 0.6s ease-out;
+animation-delay:0.1s;
+animation-fill-mode:backwards;
+line-height:1.8;
+color:#b4bcd9;
+font-size:15px;
+}
+
+ol, li {
+color:#b4bcd9;
+line-height:1.8;
+margin-left:20px;
+}
+
+/* HARDWARE GRID */
+
+.hardware-grid{
+display:grid;
+grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+gap:30px;
+margin-top:30px;
+}
+
+.hardware-card{
+background:linear-gradient(135deg, rgba(139,92,246,0.1) 0%, rgba(59,130,246,0.05) 100%);
+padding:24px;
+border-radius:14px;
+text-align:center;
+box-shadow:0 8px 24px rgba(0,0,0,0.2);
+transition:all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+will-change:transform, box-shadow;
+animation:slideInCard 0.6s ease-out backwards;
+border:1px solid rgba(139,92,246,0.15);
+position:relative;
+overflow:hidden;
+}
+
+.hardware-card::before {
+content:'';
+position:absolute;
+top:-50%;
+right:-50%;
+width:200%;
+height:200%;
+background:radial-gradient(circle, rgba(139,92,246,0.3) 0%, transparent 70%);
+opacity:0;
+transition:opacity 0.5s ease;
+}
+
+.hardware-card:nth-child(1) { animation-delay:0.1s; }
+.hardware-card:nth-child(2) { animation-delay:0.15s; }
+.hardware-card:nth-child(3) { animation-delay:0.2s; }
+.hardware-card:nth-child(4) { animation-delay:0.25s; }
+.hardware-card:nth-child(5) { animation-delay:0.3s; }
+.hardware-card:nth-child(6) { animation-delay:0.35s; }
+.hardware-card:nth-child(7) { animation-delay:0.4s; }
+.hardware-card:nth-child(8) { animation-delay:0.45s; }
+
+.hardware-card img{
+width:100%;
+height:140px;
+object-fit:contain;
+margin-bottom:15px;
+transition:transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+filter:brightness(0.9);
+}
+
+.hardware-card h4 {
+color:#e4e6eb;
+font-family:'Poppins', sans-serif;
+font-size:16px;
+font-weight:600;
+margin-bottom:8px;
+}
+
+.hardware-card p {
+color:#8b94b0;
+font-size:13px;
+}
+
+.hardware-card:hover{
+transform:translateY(-12px);
+box-shadow:0 20px 50px rgba(139,92,246,0.25);
+border:1px solid rgba(139,92,246,0.3);
+}
+
+.hardware-card:hover::before {
+opacity:1;
+}
+
+.hardware-card:hover img {
+transform:scale(1.08);
+filter:brightness(1.1);
+}
+
+@keyframes slideInCard {
+from {
+opacity:0;
+transform:translateY(30px);
+}
+to {
+opacity:1;
+transform:translateY(0);
+}
+}
+
+/* KINEMATICS IMAGE STYLE */
+
+.kin-img{
+width:100%;
+max-width:650px;
+display:block;
+margin:30px auto;
+border-radius:14px;
+box-shadow:0 12px 40px rgba(139,92,246,0.2);
+transition:all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+will-change:transform, box-shadow;
+animation:fadeInScale 0.7s ease-out;
+border:1px solid rgba(139,92,246,0.15);
+}
+
+.kin-img:hover {
+transform:scale(1.03);
+box-shadow:0 20px 60px rgba(139,92,246,0.3);
+}
+
+@keyframes fadeInScale {
+from {
+opacity:0;
+transform:scale(0.95);
+}
+to {
+opacity:1;
+transform:scale(1);
+}
+}
+
+/* TERMINAL */
+
+.terminal{
+background:linear-gradient(135deg, rgba(15,23,42,0.8) 0%, rgba(20,28,50,0.8) 100%);
+color:#10b981;
+font-family:'Courier New', monospace;
+padding:24px;
+border-radius:12px;
+margin-top:24px;
+box-shadow:0 12px 40px rgba(0,0,0,0.4);
+transition:all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+will-change:box-shadow;
+animation:fadeInLeft 0.7s ease-out;
+border:1px solid rgba(16,185,129,0.2);
+backdrop-filter:blur(10px);
+}
+
+.terminal:hover {
+box-shadow:0 16px 50px rgba(16,185,129,0.15);
+border:1px solid rgba(16,185,129,0.3);
+}
+
+.terminal p {
+color:#10b981;
+font-size:14px;
+margin:6px 0;
+font-family:'Courier New', monospace;
+}
+
+video{
+width:100%;
+border-radius:12px;
+box-shadow:0 12px 40px rgba(139,92,246,0.15);
+margin-top:24px;
+transition:all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+will-change:transform, box-shadow;
+animation:fadeInRight 0.7s ease-out;
+border:1px solid rgba(139,92,246,0.15);
+}
+
+video:hover {
+transform:scale(1.01);
+box-shadow:0 20px 60px rgba(139,92,246,0.25);
+}
+
+@keyframes fadeInLeft {
+from {
+opacity:0;
+transform:translateX(-30px);
+}
+to {
+opacity:1;
+transform:translateX(0);
+}
+}
+
+@keyframes fadeInRight {
+from {
+opacity:0;
+transform:translateX(30px);
+}
+to {
+opacity:1;
+transform:translateX(0);
+}
+}
+
+/* TEAM MEMBERS */
+
+.member {
+background:linear-gradient(135deg, rgba(139,92,246,0.1) 0%, rgba(59,130,246,0.05) 100%);
+padding:24px;
+margin:20px 0;
+border-radius:12px;
+border-left:4px solid #8b5cf6;
+transition:all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+animation:slideInLeft 0.6s ease-out backwards;
+}
+
+.member:nth-child(1) { animation-delay:0.1s; }
+.member:nth-child(2) { animation-delay:0.15s; }
+.member:nth-child(3) { animation-delay:0.2s; }
+.member:nth-child(4) { animation-delay:0.25s; }
+
+.member:hover {
+transform:translateX(8px);
+box-shadow:0 8px 24px rgba(139,92,246,0.2);
+border-left-color:#3b82f6;
+}
+
+.member h3 {
+color:#a78bfa;
+margin-bottom:4px;
+}
+
+.member p {
+color:#8b94b0;
+font-size:14px;
+}
+
+@keyframes slideInLeft {
+from {
+opacity:0;
+transform:translateX(-20px);
+}
+to {
+opacity:1;
+transform:translateX(0);
+}
+}
+
+/* SCROLLBAR STYLING */
+
+::-webkit-scrollbar {
+width:8px;
+}
+
+::-webkit-scrollbar-track {
+background:rgba(139,92,246,0.1);
+}
+
+::-webkit-scrollbar-thumb {
+background:linear-gradient(180deg, #8b5cf6, #3b82f6);
+border-radius:4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+background:linear-gradient(180deg, #a78bfa, #60a5fa);
+}
+
+/* HOME PAGE */
+
+.home-page {
+min-height:100vh;
+display:flex;
+align-items:center;
+justify-content:center;
+background:linear-gradient(135deg, rgba(26,31,58,0.4) 0%, rgba(15,19,41,0.4) 100%);
+padding:80px 40px;
+margin-bottom:40px;
+border-radius:20px;
+border:1px solid rgba(139,92,246,0.15);
+animation:fadeInUp 0.8s ease-out;
+position:relative;
+overflow:hidden;
+text-align:center;
+}
+
+.home-page::before {
+content:'';
+position:absolute;
+top:0;
+left:0;
+right:0;
+bottom:0;
+background:radial-gradient(circle at 50% 50%, rgba(139,92,246,0.1) 0%, transparent 70%);
+pointer-events:none;
+}
+
+.home-content {
+z-index:1;
+max-width:900px;
+}
+
+.home-title {
+font-size:64px;
+font-family:'Poppins', sans-serif;
+font-weight:700;
+background:linear-gradient(135deg, #8b5cf6 0%, #3b82f6 50%, #06b6d4 100%);
+-webkit-background-clip:text;
+-webkit-text-fill-color:transparent;
+background-clip:text;
+margin-bottom:20px;
+animation:slideDownHeader 0.8s ease-out;
+letter-spacing:-2px;
+}
+
+.home-subtitle {
+font-size:20px;
+color:#b4bcd9;
+margin-bottom:60px;
+animation:fadeInUp 0.8s ease-out 0.2s backwards;
+line-height:1.6;
+}
+
+.team-grid-home {
+display:grid;
+grid-template-columns:repeat(auto-fit, minmax(200px, 1fr));
+gap:30px;
+margin-bottom:50px;
+}
+
+.team-member-card {
+background:linear-gradient(135deg, rgba(139,92,246,0.15) 0%, rgba(59,130,246,0.1) 100%);
+padding:30px;
+border-radius:16px;
+border:1px solid rgba(139,92,246,0.2);
+transition:all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+animation:slideInCard 0.6s ease-out backwards;
+cursor:pointer;
+}
+
+.team-member-card:nth-child(1) { animation-delay:0.3s; }
+.team-member-card:nth-child(2) { animation-delay:0.35s; }
+.team-member-card:nth-child(3) { animation-delay:0.4s; }
+.team-member-card:nth-child(4) { animation-delay:0.45s; }
+
+.team-member-card:hover {
+transform:translateY(-12px);
+box-shadow:0 20px 50px rgba(139,92,246,0.25);
+border:1px solid rgba(139,92,246,0.4);
+}
+
+.team-member-card h3 {
+color:#a78bfa;
+font-size:18px;
+margin-bottom:8px;
+}
+
+.team-member-card p {
+color:#8b94b0;
+font-size:14px;
+margin:0;
+}
+
+.scroll-indicator {
+display:flex;
+align-items:center;
+justify-content:center;
+gap:10px;
+margin-top:40px;
+animation:fadeInUp 0.8s ease-out 0.6s backwards;
+}
+
+.scroll-text {
+color:#8b94b0;
+font-size:14px;
+font-weight:500;
+}
+
+.scroll-arrow {
+display:inline-block;
+animation:bounce 2s infinite;
+color:#a78bfa;
+font-size:20px;
+}
+
+@keyframes bounce {
+0%, 100% {
+transform:translateY(0);
+}
+50% {
+transform:translateY(-10px);
+}
+}
+
+/* RESPONSIVE */
+
+@media (max-width: 768px) {
+.sidebar {
+width:100%;
+min-height:auto;
+padding:20px;
+position:relative;
+box-shadow:0 4px 12px rgba(0,0,0,0.3);
+border-right:none;
+border-bottom:1px solid rgba(139,92,246,0.1);
+display:flex;
+gap:10px;
+overflow-x:auto;
+flex-wrap:nowrap;
+}
+
+.sidebar a {
+white-space:nowrap;
+padding:10px 14px;
+font-size:13px;
+}
+
+.content {
+margin-left:0;
+padding:40px 20px;
+}
+
+header h1 {
+font-size:32px;
+}
+
+.hardware-grid {
+grid-template-columns:repeat(auto-fit,minmax(150px,1fr));
+gap:20px;
+}
+
+section {
+padding:24px;
+margin-bottom:24px;
+}
+
+h2 {
+font-size:24px;
+}
+
+h3 {
+font-size:18px;
+}
+}
+
+@media (max-width: 480px) {
+header {
+padding:40px 20px;
+}
+
+header h1 {
+font-size:24px;
+}
+
+.content {
+padding:20px;
+}
+
+section {
+padding:16px;
+}
+
+.hardware-grid {
+grid-template-columns:1fr;
+}
+
+h2 {
+font-size:20px;
+}
+
+p, ol {
+font-size:14px;
+}
+}</style>
+</head>
+
+<body>
+
+<div class="container">
+
+<div class="sidebar">
+<a href="#home">Home</a>
+<a href="#abstract">Abstract</a>
+<a href="#intro">Introduction</a>
+<a href="#hardware">Hardware</a>
+<a href="#algorithm">Algorithm</a>
+<a href="#simulation">Simulation</a>
+<a href="#Kinematics">Kinematics</a>
+<a href="#results">Conclusion</a>
+</div>
+
+<div class="content">
+
+<section class="home-page" id="home">
+<div class="home-content">
+<h1 class="home-title">Industrial Patrolling Mobile Robot</h1>
+<p class="home-subtitle">An autonomous mobile robot capable of navigating indoor environments with obstacle detection and RFID-based personnel identification</p>
+
+<div class="team-grid-home">
+<div class="team-member-card">
+<h3>B. Yogeswar Reddy</h3>
+<p>CB.SC.U4AIE24011</p>
+</div>
+
+<div class="team-member-card">
+<h3>P. Maniroop</h3>
+<p>CB.SC.U4AIE24038</p>
+</div>
+
+<div class="team-member-card">
+<h3>M. Jay Krishna</h3>
+<p>CB.SC.U4AIE24030</p>
+</div>
+
+<div class="team-member-card">
+<h3>M. Phanendra</h3>
+<p>CB.SC.U4AIE24032</p>
+</div>
+</div>
+
+<div class="scroll-indicator">
+<span class="scroll-text">Scroll to explore</span>
+<span class="scroll-arrow">↓</span>
+</div>
+</div>
+</section>
+
+<section id="abstract">
+<h2>Abstract</h2>
+
+<p>
+This project presents the design and implementation of a low-cost autonomous mobile robot capable of navigating an indoor environment. The robot uses an Arduino Uno microcontroller with a differential drive mechanism controlled by an L298N motor driver. An ultrasonic sensor mounted on a servo motor allows the robot to scan its surroundings and detect obstacles.
+<br><br>
+The robot follows a reactive navigation strategy where it continuously moves forward when the path is clear and scans left and right when an obstacle is detected. Based on the detected distances, the robot selects the direction with more free space and continues navigation.
+<br><br>
+RFID technology is integrated into the system to identify authorized personnel, and an LCD display shows authentication status. This demonstrates how low-cost hardware components can be combined to create a simple autonomous robotic system capable of performing basic navigation and identification tasks.
+</p>
+
+</section>
+
+<section id="intro">
+
+<h2>Introduction</h2>
+
+<p>
+Autonomous robots capable of navigating their surroundings are widely used in applications such as industrial inspection, warehouse automation, and environmental monitoring. These robots must be able to detect obstacles and adjust their path accordingly.
+<br><br>
+In this project, a mobile robot is designed using an Arduino Uno, ultrasonic sensing, and a differential drive system controlled by an L298N motor driver. The ultrasonic sensor scans the surroundings to determine safe navigation paths.
+<br><br>
+The robot follows a simple reactive navigation strategy where it moves forward when the path is clear and scans left and right when obstacles are detected. RFID technology is also integrated to authenticate authorized individuals.
+</p>
+
+</section>
+
+<section id="hardware">
+
+<h2>Hardware Components</h2>
+
+<div class="hardware-grid">
+
+<div class="hardware-card">
+<img src="arduino.jpg">
+<h4>Arduino Uno</h4>
+<p>Main controller.</p>
+</div>
+
+<div class="hardware-card">
+<img src="l298n.jpg">
+<h4>L298N Motor Driver</h4>
+<p>Controls DC motors.</p>
+</div>
+
+<div class="hardware-card">
+<img src="dc_motor.jpg">
+<h4>DC Motors</h4>
+<p>Provide movement.</p>
+</div>
+
+<div class="hardware-card">
+<img src="ultrasonic.jpg">
+<h4>Ultrasonic Sensor</h4>
+<p>Detects obstacles.</p>
+</div>
+
+<div class="hardware-card">
+<img src="servo.jpg">
+<h4>Servo Motor</h4>
+<p>Rotates sensor.</p>
+</div>
+
+<div class="hardware-card">
+<img src="rfid.jpg">
+<h4>RFID</h4>
+<p>Identifies employees.</p>
+</div>
+
+<div class="hardware-card">
+<img src="lcd.jpg">
+<h4>LCD</h4>
+<p>Displays authentication status.</p>
+</div>
+
+<div class="hardware-card">
+<h4>Battery Pack</h4>
+<p>Power supply.</p>
+</div>
+
+</div>
+
+</section>
+
+<section id="algorithm">
+
+<h2>Navigation Strategy</h2>
+
+<img src="Object_detection.jpg" class="kin-img">
+
+<p>
+The robot employs a reactive <b>Obstacle-avoidance navigation strategy</b> to explore an unknown environment.<br>
+The robot continuously moves forward while monitoring the distance to obstacles using the ultrasonic sensor. When an obstacle is detected, the robot stops and rotates the servo motor to scan the left and right directions. The robot then compares the distances and moves in the direction with the largest free space.
+</p>
+
+</section>
+
+<section id="Kinematics">
+
+<h2>Kinematics</h2>
+
+<h3>Differential Drive Kinematic Model</h3>
+
+<p>
+The robot follows a differential drive model where motion is produced by two independently driven wheels.
+<br>
+The robot rotates around the Instantaneous Center of Curvature (ICC) when the two wheels move at different speeds.
+</p>
+<img src="diag.png" class="kin-img">
+<h3>Equations of Motion</h3>
+<img src="equ.png" class="kin-img">
+<img src="equa2.png" class="kin-img">
+<br><br>
+<p>There are three important motion cases in a differential drive robot:</p>
+<ol>
+
+<li>
+If <b>V<sub>l</sub> = V<sub>r</sub></b>, the robot moves in a straight line.
+The turning radius <b>R</b> becomes infinite and the angular velocity
+<b>ω = 0</b>, meaning there is no rotation.
+</li>
+
+<br>
+
+<li>
+If <b>V<sub>l</sub> = −V<sub>r</sub></b>, the turning radius becomes
+<b>R = 0</b>. In this case, the robot rotates about the midpoint of the
+wheel axis and performs a rotation in place.
+</li>
+
+<br>
+
+<li>
+If <b>V<sub>l</sub> = 0</b>, the robot rotates about the left wheel.
+The turning radius becomes <b>R = l / 2</b>. The same condition applies
+if <b>V<sub>r</sub> = 0</b>, where the robot rotates about the right wheel.
+</li>
+
+</ol>
+<br><br>
+<h3>Forward Kinematics</h3>
+
+<img src="for.png" class="kin-img">
+
+<h3>Inverse Kinematics</h3>
+
+<img src="Inver.png" class="kin-img">
+<img src="inverse_2.jpg" class="kin-img">
+
+</section>
+
+<section id="simulation">
+
+<h2>Simulation</h2>
+
+<video controls>
+<source src="simulation_video.mp4" type="video/mp4">
+</video>
+
+<div class="terminal">
+<p>Robot reached: ZONE_B</p>
+<p>Robot reached: ZONE_C</p>
+<p>Robot reached: ZONE_A</p>
+</div>
+
+</section>
+
+<section id="results">
+
+<h2>Conclusion</h2>
+
+<ol>
+<li>The project demonstrates an autonomous robot capable of navigating indoor environments.</li>
+<li>Ultrasonic sensing enables obstacle detection and avoidance.</li>
+<li>A reactive navigation algorithm allows the robot to adapt to unknown environments.</li>
+<li>RFID provides authentication for authorized users.</li>
+<li>The system shows how low-cost hardware can build a simple autonomous robotic system.</li>
+</ol>
+
+</section>
+
+</div>
+</div>
+
+</body>
+</html>
